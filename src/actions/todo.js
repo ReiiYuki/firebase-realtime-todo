@@ -1,24 +1,25 @@
-import { getSectionsDB, addSection } from 'javascripts/firebase'
+import { getSectionsDB, addSection, addTodoItem } from 'javascripts/firebase'
 import actionType from 'constants'
+import {push} from 'react-router-redux'
 
 export const loadSections = () => {
 	return dispatch => {
 		dispatch({
 			type: actionType.LOAD_SECTIONS_REQUEST
 		})
-		getSectionsDB()
-			.then(sections => {
-				dispatch({
-					type: actionType.LOAD_SECTIONS_SUCCESS,
-					payload: sections.val()
-				})
-			})
-			.catch(error => {
-				dispatch({
-					type: actionType.LOAD_SECTIONS_FAILED,
-					payload: error
-				})
-			})
+    getSectionsDB()
+      .then(sections => {
+        dispatch({
+          type: actionType.LOAD_SECTIONS_SUCCESS,
+          payload: sections.val()
+        })
+      })
+      .catch(error => {
+        dispatch({
+          type: actionType.LOAD_SECTIONS_FAILED,
+          payload: error
+        })
+      })
 	}
 }
 
@@ -29,6 +30,7 @@ export const createSection = (name) => {
 		})
 		addSection(name)
 			.then(res => {
+        loadSections()(dispatch)
 				dispatch({
 					type: actionType.ADD_SECTION_SUCCESS
 				})
@@ -40,4 +42,32 @@ export const createSection = (name) => {
 				})
 			})
 	}
+}
+
+export const createTodoItem = (sectionId, name) => {
+  return (dispatch) => {
+    dispatch({
+      type: actionType.CREATE_TODO_REQUEST
+    })
+    addTodoItem(sectionId, name)
+      .then(res => {
+        loadSections()(dispatch)
+        dispatch({
+          type: actionType.CREATE_TODO_SUCCESS,
+          payload: res
+        })
+      })
+      .catch(error => {
+        dispatch({
+          type: actionType.CREATE_TODO_FAILED,
+          payload: error
+        })
+      })
+   }
+}
+
+export const loadSpecificSection = (sectionId) => {
+  return (dispatch) => {
+    dispatch(push(`/${sectionId}`))
+  }
 }

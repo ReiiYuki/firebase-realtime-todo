@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import SectionList from './section-list'
 import {connect} from 'react-redux'
-import {loadSections, createSection} from 'actions/todo'
-
+import {createSection, loadSpecificSection} from 'actions/todo'
 class App extends Component {
-  componentDidMount() {
-    this.props.loadSections()
-  }
 
   onSubmit = (e) => {
     e.preventDefault()
@@ -16,10 +12,14 @@ class App extends Component {
     ref.value = ''
   }
 
+  onSectionClick = (sectionId) => {
+    this.props.loadSpecificSection(sectionId)
+  }
+
   render() {
     return (
       <div>
-        <SectionList sections={this.props.sections}/>
+        <SectionList sections={this.props.sections} onClick={this.onSectionClick}/>
         <form onSubmit={this.onSubmit}>
           <input ref="section-name"/>
           <button>Add new section</button>
@@ -36,4 +36,4 @@ const mapStateToProps = (state) => {
 }
 
 
-export default connect(mapStateToProps, {loadSections, createSection})(App)
+export default connect(mapStateToProps, {createSection, loadSpecificSection})(App)
